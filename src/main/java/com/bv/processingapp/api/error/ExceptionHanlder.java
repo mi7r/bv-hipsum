@@ -3,7 +3,6 @@ package com.bv.processingapp.api.error;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,7 +19,6 @@ public class ExceptionHanlder {
     @ExceptionHandler(ConstraintViolationException.class)
     public void handleConstraintViolationException(final ConstraintViolationException ex) {
         log.error(INVALID_PARAMETER_ERROR_MESSAGE, ex.getLocalizedMessage());
-        ResponseEntity.badRequest().body(ex.getLocalizedMessage());
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = INVALID_PARAMETER_ERROR_MESSAGE)

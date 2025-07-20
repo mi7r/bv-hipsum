@@ -18,7 +18,7 @@ public class HipsumClientImpl implements HipsumClient {
     private final HipsumProperties hipsumProperties;
 
     @Override
-    public List<String> provideDummyText(final int numberOfParagraphs) {
+    public List<String> provideDummyText() {
 
         final List<String> listOfParagraphs;
 
