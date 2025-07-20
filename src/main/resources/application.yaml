@@ -1,2 +1,8 @@
-spring:
-  application:
+server:
+    port: 8090
+external:
+    services:
+        hipsum:
+            base-url: https://hipsum.co/api/
+            paras-parameter-value: 1
+            full-url: ${external.services.hipsum.base-url}?type=hipster-centric&paras=${external.services.hipsum.paras-parameter-value}
