@@ -16,7 +16,7 @@ public class RestClientConfig {
     private final HipsumProperties hipsumProperties;
 
     @Bean
-    RestClient hipsumRestClient(){
+    RestClient hipsumRestClient() {
         return RestClient.builder()
             .baseUrl(hipsumProperties.getFullUrl())
             .build();

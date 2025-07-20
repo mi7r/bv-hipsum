@@ -14,7 +14,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class ExceptionHanlder {
 
     private static final String BAD_REQUEST = "BAD_REQUEST";
-    private static final String INVALID_PARAMETER_ERROR_MESSAGE= "Invalid request parameter provided. Error message: {}";
+    private static final String INVALID_PARAMETER_ERROR_MESSAGE = "Invalid request parameter provided. Error message: {}";
 
     @ResponseStatus(value = org.springframework.http.HttpStatus.BAD_REQUEST, reason = BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)

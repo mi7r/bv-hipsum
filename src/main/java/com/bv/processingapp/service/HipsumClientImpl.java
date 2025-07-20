@@ -25,7 +25,8 @@ public class HipsumClientImpl implements HipsumClient {
         listOfParagraphs = hipsumRestClient
             .get()
             .retrieve()
-            .body(new ParameterizedTypeReference<List<String>>() {});
+            .body(new ParameterizedTypeReference<List<String>>() {
+            });
 
         return listOfParagraphs;
     }
