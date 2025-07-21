@@ -18,15 +18,14 @@ public class HipsumClientImpl implements HipsumClient {
     private final HipsumProperties hipsumProperties;
 
     @Override
-    public List<String> provideDummyText() {
+    public List<String> provideText() {
 
         final List<String> listOfParagraphs;
 
         listOfParagraphs = hipsumRestClient
             .get()
             .retrieve()
-            .body(new ParameterizedTypeReference<List<String>>() {
-            });
+            .body(new ParameterizedTypeReference<List<String>>() {});
 
         return listOfParagraphs;
     }

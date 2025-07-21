@@ -4,6 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record ProcessingResponse(
-    String freqWord, Integer avgParagraphSize, Long avgParagraphProcessingTime, Long totalProcessingTime
+    String freqWord,
+    Integer avgParagraphSize,
+    Long avgParagraphProcessingTime,
+    Long totalProcessingTime
 ) {
 }

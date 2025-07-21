@@ -21,7 +21,7 @@ public class TextProcessingServiceImpl implements TextProcessingService {
     public ProcessingResponse processText(final int numberOfParagraphs) {
         LocalDateTime processingStartTime = LocalDateTime.now();
 
-        final List<String> hipsumParagraphsList = hipsumClient.provideDummyText();
+        final List<String> hipsumParagraphsList = hipsumClient.provideText();
 
         String paragraph = hipsumParagraphsList.stream().findFirst().get();
 
