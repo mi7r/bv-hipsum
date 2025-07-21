@@ -1,6 +1,7 @@
 package com.bv.processingapp.service;
 
 import com.bv.processingapp.api.model.ProcessingResponse;
+import com.bv.processingapp.service.kafka.KafkaProcessingResponsePublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class TextProcessingServiceImpl implements TextProcessingService {
 
     private final HipsumClient hipsumClient;
+    private final KafkaProcessingResponsePublisher kafkaProcessingResponsePublisher;
 
     private static final String REGEX_EXPRESSION_FOR_SPLIT = "\\s+";
     private static final String REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION = "[,.]";
@@ -62,12 +64,15 @@ public class TextProcessingServiceImpl implements TextProcessingService {
         String mostFrequentWord = getMostFrequentWord(totalWordFrequencyMap);
         log.info("Most frequent word is: {}", mostFrequentWord);
 
-        return ProcessingResponse.builder()
+        final ProcessingResponse response = ProcessingResponse.builder()
             .freqWord(mostFrequentWord)
             .avgParagraphSize(getAverageParagraphSize(paragraphSizeList))
             .avgParagraphProcessingTime(getAverageParagraphProcessingTime(paragraphProcessingTimeInMillisList))
             .totalProcessingTime(Duration.between(totalProcessingStartTime, LocalDateTime.now()).toMillis())
             .build();
+
+        kafkaProcessingResponsePublisher.publishProcessingResponse(response.toString());
+        return response;
     }
 
     private static long getAverageParagraphProcessingTime(final List<Long> paragraphProcessingTimeInMillisList) {
