@@ -1,7 +1,7 @@
 package com.bv.processingapp.service;
 
-import com.bv.processingapp.api.model.ProcessingResponse;
-import com.bv.processingapp.service.kafka.KafkaProcessingResponsePublisher;
+import com.bv.processingapp.api.model.ComputationResultResponse;
+import com.bv.processingapp.service.kafka.KafkaComputationResultPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,16 +18,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TextProcessingServiceImpl implements TextProcessingService {
+public class ComputationServiceImpl implements ComputationService {
 
     private final HipsumClient hipsumClient;
-    private final KafkaProcessingResponsePublisher kafkaProcessingResponsePublisher;
+    private final KafkaComputationResultPublisher kafkaProcessingResponsePublisher;
 
     private static final String REGEX_EXPRESSION_FOR_SPLIT = "\\s+";
     private static final String REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION = "[,.]";
 
     @Override
-    public ProcessingResponse processText(final int numberOfParagraphs) {
+    public ComputationResultResponse processText(final int numberOfParagraphs) {
         final LocalDateTime totalProcessingStartTime = LocalDateTime.now();
         log.info("Received request with {} paragraphs to process.", numberOfParagraphs);
 
@@ -64,14 +64,14 @@ public class TextProcessingServiceImpl implements TextProcessingService {
         String mostFrequentWord = getMostFrequentWord(totalWordFrequencyMap);
         log.info("Most frequent word is: {}", mostFrequentWord);
 
-        final ProcessingResponse response = ProcessingResponse.builder()
+        final ComputationResultResponse response = ComputationResultResponse.builder()
             .freqWord(mostFrequentWord)
             .avgParagraphSize(getAverageParagraphSize(paragraphSizeList))
             .avgParagraphProcessingTime(getAverageParagraphProcessingTime(paragraphProcessingTimeInMillisList))
             .totalProcessingTime(Duration.between(totalProcessingStartTime, LocalDateTime.now()).toMillis())
             .build();
 
-        kafkaProcessingResponsePublisher.publishProcessingResponse(response.toString());
+        kafkaProcessingResponsePublisher.publishComputationResult(response);
         return response;
     }
 

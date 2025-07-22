@@ -1,5 +1,6 @@
 package com.bv.processingapp.service.kafka;
 
+import com.bv.processingapp.api.model.ComputationResultResponse;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,17 +12,17 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class KafkaProcessingResponsePublisher implements ProcessingResponsePublisher {
+public class KafkaComputationResultPublisher implements ComputationResultPublisher {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, ComputationResultResponse> kafkaTemplate;
 
     @Value("${external.services.kafka.topic}")
     private String kafkaTopic;
 
     @Override
-    public void publishProcessingResponse(final String processingResponse) {
+    public void publishComputationResult(final ComputationResultResponse computationResult) {
         if (StringUtils.isNotBlank(kafkaTopic)) {
-            kafkaTemplate.send(kafkaTopic, processingResponse);
+            kafkaTemplate.send(kafkaTopic, computationResult);
         } else {
             log.warn("No kafka topic configured - message not sent.");
         }
@@ -30,7 +31,7 @@ public class KafkaProcessingResponsePublisher implements ProcessingResponsePubli
     //todo: remove Listener from this repo
     @KafkaListener(id="processing_id",topics = "${external.services.kafka.topic}")
     public void listen(String processingResponse) {
-        log.info("Received response from external service: {}", processingResponse);
+        log.info("Received message from KAFKA topic: {}", processingResponse);
     }
 
 }

@@ -1,5 +1,3 @@
-server:
-    port: 8090
 external:
     services:
         hipsum:
@@ -8,3 +6,9 @@ external:
             full-url: ${external.services.hipsum.base-url}?type=hipster-centric&paras=${external.services.hipsum.paras-parameter-value}
         kafka:
             topic: words.processed
+server:
+    port: 8090
+spring:
+    kafka:
+        producer:
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

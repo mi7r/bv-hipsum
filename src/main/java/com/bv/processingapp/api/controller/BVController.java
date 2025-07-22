@@ -1,7 +1,7 @@
 package com.bv.processingapp.api.controller;
 
-import com.bv.processingapp.api.model.ProcessingResponse;
-import com.bv.processingapp.service.TextProcessingService;
+import com.bv.processingapp.api.model.ComputationResultResponse;
+import com.bv.processingapp.service.ComputationService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BVController {
 
-    private final TextProcessingService textProcessingService;
+    private final ComputationService computationService;
 
     @GetMapping(value = "/text", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProcessingResponse> text(
+    public ResponseEntity<ComputationResultResponse> text(
         @RequestParam() @Min(value = 1) final int p
     ) {
-        return ResponseEntity.status(HttpStatus.OK.value()).body(textProcessingService.processText(p));
+        return ResponseEntity.status(HttpStatus.OK.value()).body(computationService.processText(p));
     }
 }
