@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("betvictor")
 @RequiredArgsConstructor
-public class BVController {
+public class ComputationController {
 
     private final ComputationService computationService;
 

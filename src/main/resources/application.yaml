@@ -9,6 +9,8 @@ external:
 server:
     port: 8090
 spring:
+    application:
+        name: processing-app
     kafka:
         producer:
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
