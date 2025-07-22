@@ -41,7 +41,7 @@ public class ComputationServiceImpl implements ComputationService {
             final LocalDateTime paragraphProcessingStartTime = LocalDateTime.now();
             log.info("Processing paragraph no: {}", i);
 
-            final String singleParagraph = hipsumClient.provideText().getFirst();
+            final String singleParagraph = hipsumClient.provideText().getFirst().toLowerCase();
 
             mergeWordOccurrence(requestWordsOccurrenceMap, splitParagraphInToWords(singleParagraph));
 
