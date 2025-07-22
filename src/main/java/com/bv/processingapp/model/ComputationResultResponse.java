@@ -1,4 +1,4 @@
-package com.bv.processingapp.api.model;
+package com.bv.processingapp.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

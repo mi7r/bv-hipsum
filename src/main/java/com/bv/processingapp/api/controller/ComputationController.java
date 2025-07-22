@@ -1,6 +1,6 @@
 package com.bv.processingapp.api.controller;
 
-import com.bv.processingapp.api.model.ComputationResultResponse;
+import com.bv.processingapp.model.ComputationResultResponse;
 import com.bv.processingapp.service.ComputationService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

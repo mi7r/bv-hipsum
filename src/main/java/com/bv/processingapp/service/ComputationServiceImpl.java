@@ -1,6 +1,6 @@
 package com.bv.processingapp.service;
 
-import com.bv.processingapp.api.model.ComputationResultResponse;
+import com.bv.processingapp.model.ComputationResultResponse;
 import com.bv.processingapp.service.kafka.KafkaComputationResultPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +71,7 @@ public class ComputationServiceImpl implements ComputationService {
             .totalProcessingTime(Duration.between(totalProcessingStartTime, LocalDateTime.now()).toMillis())
             .build();
 
-        kafkaProcessingResponsePublisher.publishComputationResult(response);
+        kafkaProcessingResponsePublisher.publishComputationResult(response.toString());
         return response;
     }
 
