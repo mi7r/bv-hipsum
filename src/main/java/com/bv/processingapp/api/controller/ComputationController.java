@@ -1,7 +1,8 @@
 package com.bv.processingapp.api.controller;
 
-import com.bv.processingapp.model.ComputationResultResponse;
+import com.bv.processingapp.model.ComputationResult;
 import com.bv.processingapp.service.ComputationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +23,9 @@ public class ComputationController {
     private final ComputationService computationService;
 
     @GetMapping(value = "/text", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComputationResultResponse> text(
+    public ResponseEntity<ComputationResult> text(
         @RequestParam() @Min(value = 1) final int p
-    ) {
+    ) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK.value()).body(computationService.processText(p));
     }
 }

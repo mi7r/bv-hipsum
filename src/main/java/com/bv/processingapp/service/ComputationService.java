@@ -1,7 +1,8 @@
 package com.bv.processingapp.service;
 
-import com.bv.processingapp.model.ComputationResultResponse;
+import com.bv.processingapp.model.ComputationResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface ComputationService {
-    ComputationResultResponse processText(final int numberOfParagraphs);
+    ComputationResult processText(final int numberOfParagraphs) throws JsonProcessingException;
 }
