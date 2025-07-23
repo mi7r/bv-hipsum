@@ -15,13 +15,9 @@ public class HipsumClientImpl implements HipsumClient {
 
     @Override
     public List<String> provideText() {
-        final List<String> listOfParagraphs;
-
-        listOfParagraphs = hipsumRestClient
+        return hipsumRestClient
             .get()
             .retrieve()
             .body(new ParameterizedTypeReference<List<String>>() {});
-
-        return listOfParagraphs;
     }
 }

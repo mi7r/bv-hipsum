@@ -25,7 +25,7 @@ public class ComputationServiceImpl implements ComputationService {
     private final KafkaComputationResultPublisher kafkaProcessingResponsePublisher;
     private final ObjectMapper objectMapper;
 
-    private static final String REGEX_EXPRESSION_FOR_SPLIT = "\\s+";
+    private static final String REGEX_EXPRESSION_FOR_SPLIT = "[^a-zA-Z]+";
     private static final String REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION = "[,.]";
 
     @Override
@@ -83,6 +83,7 @@ public class ComputationServiceImpl implements ComputationService {
         return Arrays.stream(paragraph
                 .replaceAll(REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION, "")
                 .split(REGEX_EXPRESSION_FOR_SPLIT))
+            .filter(word -> word.length() > 1 && word.chars().allMatch(Character::isLetter))
             .collect(Collectors.toMap(String::trim, word -> 1, Integer::sum));
     }
 }

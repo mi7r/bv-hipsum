@@ -23,9 +23,7 @@ public class ComputationController {
     private final ComputationService computationService;
 
     @GetMapping(value = "/text", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComputationResult> text(
-        @RequestParam() @Min(value = 1) final int p
-    ) throws JsonProcessingException {
+    public ResponseEntity<ComputationResult> text(@RequestParam() @Min(value = 1) final int p) throws JsonProcessingException {
         return ResponseEntity.status(HttpStatus.OK.value()).body(computationService.processText(p));
     }
 }
