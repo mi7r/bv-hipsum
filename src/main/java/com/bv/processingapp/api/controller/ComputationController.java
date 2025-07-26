@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.ExecutionException;
+
 @Validated
 @RestController
 @RequestMapping("betvictor")
@@ -23,7 +25,7 @@ public class ComputationController {
     private final ComputationService computationService;
 
     @GetMapping(value = "/text", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComputationResult> text(@RequestParam() @Min(value = 1) final int p) throws JsonProcessingException {
+    public ResponseEntity<ComputationResult> text(@RequestParam() @Min(value = 1) final int p) throws JsonProcessingException, ExecutionException, InterruptedException {
         return ResponseEntity.status(HttpStatus.OK.value()).body(computationService.processText(p));
     }
 }

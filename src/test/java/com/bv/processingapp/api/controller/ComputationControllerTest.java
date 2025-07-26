@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.concurrent.ExecutionException;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,7 +28,7 @@ class ComputationControllerTest {
     private ComputationController computationController;
 
     @Test
-    void processText_shouldReturnResponseEntity() throws JsonProcessingException {
+    void processText_shouldReturnResponseEntity() throws JsonProcessingException, ExecutionException, InterruptedException {
         final ComputationResult fakeComputationResult = ComputationResult.builder()
             .freqWord("check")
             .avgParagraphSize(100)
