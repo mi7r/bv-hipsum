@@ -46,7 +46,7 @@ public class ComputationServiceImpl implements ComputationService {
 
         final List<Callable<ParagraphAnalysisResult>> tasks = new ArrayList<>();
 
-        for (int i = 0; i < numberOfParagraphs; i++) {
+        for (int i = 1; i <= numberOfParagraphs; i++) {
             log.info("Starting to process paragraph: {}", i);
             tasks.add(paragraphAnalysisService::analyzeParagraph);
         }
@@ -55,7 +55,6 @@ public class ComputationServiceImpl implements ComputationService {
             final List<Future<ParagraphAnalysisResult>> paragraphAnalysisResults = executorService.invokeAll(tasks);
 
             for (Future<ParagraphAnalysisResult> result : paragraphAnalysisResults) {
-                log.info("Starting to process paragraph with size: {}", result.get().paragraphSize());
                 ParagraphAnalysisResult paragraphAnalysisResult = result.get();
                 summedSizeOfAllParagraphs.addAndGet(paragraphAnalysisResult.paragraphSize());
                 summedProcessingTimeOfAllParagraphsInMilliseconds.addAndGet(paragraphAnalysisResult.paragraphProcessingTime());
