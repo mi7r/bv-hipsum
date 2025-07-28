@@ -59,10 +59,10 @@ class ComputationServiceImplTest {
         .paragraphProcessingTime(100L)
         .build();
 
-    private final static ParagraphAnalysisResult MOCKED_PARAGRAPH_ANALYSIS_RESULT_3 = ParagraphAnalysisResult.builder()
+    private static final ParagraphAnalysisResult MOCKED_PARAGRAPH_ANALYSIS_RESULT_3 = ParagraphAnalysisResult.builder()
         .paragraphWordsMap(Map.of(
-            "check", 3,
-            "word", 2
+            "check", 4,
+            "word", 3
         ))
         .paragraphSize(MOCKED_PARAGRAPH_3.size())
         .paragraphProcessingTime(100L)
@@ -81,7 +81,8 @@ class ComputationServiceImplTest {
 
     @Test
     void processText_forMultipleParagraphs_shouldProperlySumUpWordOccurrence() throws JsonProcessingException {
-        when(paragraphAnalysisServiceMock.analyzeParagraph()).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT_2);
+        when(paragraphAnalysisServiceMock.analyzeParagraph()).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT).thenReturn(
+            MOCKED_PARAGRAPH_ANALYSIS_RESULT_2);
 
         ComputationResult result = computationService.processText(2);
         assertEquals("word", result.freqWord());
@@ -113,7 +114,8 @@ class ComputationServiceImplTest {
 
     @Test
     void processText_forMultipleParagraphs_shouldSendMessageToKafkaOnce() throws JsonProcessingException {
-        when(paragraphAnalysisServiceMock.analyzeParagraph()).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT_2);
+        when(paragraphAnalysisServiceMock.analyzeParagraph()).thenReturn(MOCKED_PARAGRAPH_ANALYSIS_RESULT).thenReturn(
+            MOCKED_PARAGRAPH_ANALYSIS_RESULT_2);
 
         ComputationResult result = computationService.processText(2);
 
