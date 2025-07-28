@@ -30,9 +30,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class ComputationServiceImpl implements ComputationService {
 
+    private final ParagraphAnalysisService paragraphAnalysisService;
     private final KafkaComputationResultPublisher kafkaProcessingResponsePublisher;
     private final ObjectMapper objectMapper;
-    private final ParagraphAnalysisService paragraphAnalysisService;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(30);
 

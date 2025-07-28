@@ -48,3 +48,6 @@ docker compose -f kafka-local-docker-compose.yaml up -d
 # Stopping and removing Kafka container
 docker compose -f kafka-local-docker-compose.yaml down
 ```
+
+## Local Testing
+Currently to run ComputationControllerTestIT it is required to have Kafka Docker container running locally. This has to be resolved in the future.
