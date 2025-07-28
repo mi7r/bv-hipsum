@@ -1,6 +1,8 @@
 package com.bv.processingapp.service;
 
+import com.bv.processingapp.exception.ParagraphProcessingException;
 import com.bv.processingapp.model.ComputationResult;
+import com.bv.processingapp.model.ParagraphAnalysisResult;
 import com.bv.processingapp.service.kafka.KafkaComputationResultPublisher;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,60 +12,71 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ComputationServiceImpl implements ComputationService {
 
-    private final HipsumClient hipsumClient;
+    private final ParagraphAnalysisService paragraphAnalysisService;
     private final KafkaComputationResultPublisher kafkaProcessingResponsePublisher;
     private final ObjectMapper objectMapper;
 
-    private static final String REGEX_EXPRESSION_FOR_SPLIT = "[^a-zA-Z]+";
-    private static final String REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION = "[,.]";
+    private final ExecutorService executorService = Executors.newFixedThreadPool(30);
 
     @Override
     public ComputationResult processText(final int numberOfParagraphs) throws JsonProcessingException {
         final LocalDateTime requestProcessingStartTime = LocalDateTime.now();
-        log.info("Received request with {} paragraphs to process.", numberOfParagraphs);
 
-        int summedSizeOfAllParagraphs = 0;
-        long summedProcessingTimeOfAllParagraphsInMiliseconds = 0L;
-        final Map<String, Integer> requestWordsOccurrenceMap = new HashMap<>();
+        final AtomicInteger summedSizeOfAllParagraphs = new AtomicInteger(0);
+        final AtomicLong summedProcessingTimeOfAllParagraphsInMilliseconds = new AtomicLong(0);
+        final Map<String, Integer> requestWordsOccurenceMap = new ConcurrentHashMap<>();
+
+        final List<Callable<ParagraphAnalysisResult>> tasks = new ArrayList<>();
 
         for (int i = 1; i <= numberOfParagraphs; i++) {
-            final LocalDateTime paragraphProcessingStartTime = LocalDateTime.now();
-            log.info("Processing paragraph no: {}", i);
-
-            final String singleParagraph = hipsumClient.provideText().getFirst().toLowerCase();
-
-            mergeWordOccurrence(requestWordsOccurrenceMap, splitParagraphInToWords(singleParagraph));
-
-            summedSizeOfAllParagraphs += singleParagraph.length();
-            summedProcessingTimeOfAllParagraphsInMiliseconds += Duration.between(
-                paragraphProcessingStartTime,
-                LocalDateTime.now()
-            ).toMillis();
+            log.info("Starting to process paragraph: {}", i);
+            tasks.add(paragraphAnalysisService::analyzeParagraph);
         }
 
-        String mostFrequentWord = getMostFrequentWord(requestWordsOccurrenceMap);
-        log.info("Most frequent word is: {}", mostFrequentWord);
+        try {
+            final List<Future<ParagraphAnalysisResult>> paragraphAnalysisResults = executorService.invokeAll(tasks);
+
+            for (Future<ParagraphAnalysisResult> result : paragraphAnalysisResults) {
+                ParagraphAnalysisResult paragraphAnalysisResult = result.get();
+                summedSizeOfAllParagraphs.addAndGet(paragraphAnalysisResult.paragraphSize());
+                summedProcessingTimeOfAllParagraphsInMilliseconds.addAndGet(paragraphAnalysisResult.paragraphProcessingTime());
+                mergeWordOccurrence(requestWordsOccurenceMap, paragraphAnalysisResult.paragraphWordsMap());
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            throw new ParagraphProcessingException(e);
+        }
 
         final ComputationResult response = ComputationResult.builder()
-            .freqWord(mostFrequentWord)
-            .avgParagraphSize(summedSizeOfAllParagraphs / numberOfParagraphs)
-            .avgParagraphProcessingTime(summedProcessingTimeOfAllParagraphsInMiliseconds / numberOfParagraphs)
+            .freqWord(getMostFrequentWord(requestWordsOccurenceMap))
+            .avgParagraphSize(summedSizeOfAllParagraphs.get() / numberOfParagraphs)
+            .avgParagraphProcessingTime(summedProcessingTimeOfAllParagraphsInMilliseconds.get() / numberOfParagraphs)
             .totalProcessingTime(Duration.between(requestProcessingStartTime, LocalDateTime.now()).toMillis())
             .build();
 
         kafkaProcessingResponsePublisher.publishComputationResult(objectMapper.writeValueAsString(response));
         return response;
+    }
+
+    private static String getMostFrequentWord(Map<String, Integer> wordsFrequencyMap) {
+        return Collections.max(wordsFrequencyMap.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 
     private static void mergeWordOccurrence(
@@ -75,15 +88,4 @@ public class ComputationServiceImpl implements ComputationService {
         );
     }
 
-    private static String getMostFrequentWord(Map<String, Integer> wordsFrequencyMap) {
-        return Collections.max(wordsFrequencyMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-    }
-
-    private static Map<String, Integer> splitParagraphInToWords(String paragraph) {
-        return Arrays.stream(paragraph
-                .replaceAll(REGEX_EXPRESSION_TO_REMOVE_PUNCTUATION, "")
-                .split(REGEX_EXPRESSION_FOR_SPLIT))
-            .filter(word -> word.length() > 1 && word.chars().allMatch(Character::isLetter))
-            .collect(Collectors.toMap(String::trim, word -> 1, Integer::sum));
-    }
 }

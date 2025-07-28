@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class ComputationControllerTestIT {
 
+    //todo: update tests configuration to run Kafka docker instance only for testing purposes
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -55,5 +57,4 @@ class ComputationControllerTestIT {
             )
             .andExpect(status().isBadRequest());
     }
-
 }
